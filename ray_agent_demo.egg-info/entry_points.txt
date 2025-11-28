@@ -1,0 +1,2 @@
+[console_scripts]
+ray-agent-demo = run_all_demos:main

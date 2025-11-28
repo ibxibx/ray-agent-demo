@@ -1,0 +1,11 @@
+ray[default]>=2.9.0
+numpy>=1.24.0
+pandas>=2.0.0
+asyncio-extensions>=1.2.0
+dataclasses-json>=0.6.0
+
+[dev]
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+black>=23.0.0
+flake8>=6.0.0

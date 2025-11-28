@@ -1,0 +1,141 @@
+Metadata-Version: 2.4
+Name: ray-agent-demo
+Version: 0.2.0
+Summary: A comprehensive Ray agent demonstration showcasing distributed computing patterns
+Home-page: https://github.com/ibxibx/ray-agent-demo
+Author: Your Name
+Author-email: your.email@example.com
+Project-URL: Bug Reports, https://github.com/ibxibx/ray-agent-demo/issues
+Project-URL: Source, https://github.com/ibxibx/ray-agent-demo
+Keywords: ray distributed-computing agents actors parallel-processing
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: System :: Distributed Computing
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: ray[default]>=2.9.0
+Requires-Dist: numpy>=1.24.0
+Requires-Dist: pandas>=2.0.0
+Requires-Dist: asyncio-extensions>=1.2.0
+Requires-Dist: dataclasses-json>=0.6.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7.4.0; extra == "dev"
+Requires-Dist: pytest-asyncio>=0.21.0; extra == "dev"
+Requires-Dist: black>=23.0.0; extra == "dev"
+Requires-Dist: flake8>=6.0.0; extra == "dev"
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: keywords
+Dynamic: project-url
+Dynamic: provides-extra
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+# Ray Agent Demo
+
+A demonstration project for learning distributed computing with Ray, showcasing basic agent (actor) patterns and asynchronous task processing.
+
+## Overview
+
+This project demonstrates:
+- Creating Ray actors (agents) that maintain state
+- Processing tasks asynchronously across distributed workers
+- Collecting and aggregating results from multiple agents
+- Basic patterns for building distributed systems with Ray
+
+## Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/ibxibx/ray-agent-demo.git
+cd ray-agent-demo
+
+# Install in development mode
+pip install -e .
+
+# Or install requirements directly
+pip install -r requirements.txt
+```
+
+## Quick Start
+
+Run the basic agent example:
+
+```python
+from basic_agent import demo_basic_agent
+demo_basic_agent()
+```
+
+Or from the command line:
+
+```bash
+python basic_agent.py
+```
+
+## Project Structure
+
+```
+ray-agent-demo/
+├── basic_agent.py      # Basic Ray actor demonstration
+├── requirements.txt    # Project dependencies
+├── setup.py           # Package setup configuration
+└── __init__.py        # Package initialization
+```
+
+## Examples
+
+### Basic Agent Usage
+
+```python
+import ray
+from basic_agent import BasicAgent
+
+# Initialize Ray
+ray.init()
+
+# Create an agent
+agent = BasicAgent.remote("agent-001")
+
+# Process a task
+result = ray.get(agent.process_task.remote("my_task"))
+
+# Get agent status
+status = ray.get(agent.get_status.remote())
+```
+
+## Features
+
+- **State Management**: Agents maintain their own state across method calls
+- **Asynchronous Processing**: Submit tasks without blocking and collect results later
+- **Task Tracking**: Each agent tracks the number of tasks processed and stores results
+- **Status Monitoring**: Query agent status at any time
+
+## Next Steps
+
+- Add multi-agent coordination examples
+- Implement agent communication patterns
+- Add error handling and resilience features
+- Create performance benchmarks
+- Build a distributed task queue example
+
+## Requirements
+
+- Python >= 3.8
+- Ray >= 2.9.0
+- NumPy >= 1.24.0
+- Pandas >= 2.0.0
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
