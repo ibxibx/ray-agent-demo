@@ -29,7 +29,6 @@ setup(
         "ray[default]>=2.9.0",
         "numpy>=1.24.0",
         "pandas>=2.0.0",
-        "asyncio-extensions>=1.2.0",
         "dataclasses-json>=0.6.0",
     ],
     extras_require={
