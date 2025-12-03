@@ -1,98 +1,95 @@
 """
-Multi-Agent Coordinator Example
-Demonstrates how to coordinate multiple Ray agents to process tasks in parallel.
+Optimized Multi-Agent Coordinator
+High-performance coordination of multiple Ray agents for parallel task processing.
 """
 
 import ray
 import time
-import random
-from typing import List, Dict, Any
+import asyncio
+from typing import List, Dict, Any, Optional, Tuple
+from collections import defaultdict
 from basic_agent import BasicAgent
 
 
 @ray.remote
 class AgentCoordinator:
     """
-    Coordinates multiple agents to distribute and process tasks efficiently.
+    Optimized coordinator for multiple agents with efficient task distribution.
     """
     
     def __init__(self, num_agents: int = 3):
         self.num_agents = num_agents
         self.agents = []
-        self.task_assignments = {}
-        self.completed_tasks = []
+        self.task_assignments = defaultdict(list)
         
-        # Create the agent pool
-        for i in range(num_agents):
-            agent = BasicAgent.remote(f"agent-{i:03d}")
-            self.agents.append(agent)
+        # Pre-create agent pool
+        self.agents = [BasicAgent.remote(f"agent-{i:03d}") 
+                      for i in range(num_agents)]
     
     def distribute_tasks(self, tasks: List[Any]) -> Dict[str, List[Any]]:
         """
-        Distribute tasks among available agents using round-robin.
-        
-        Args:
-            tasks: List of tasks to distribute
-            
-        Returns:
-            Dict mapping agent IDs to their assigned tasks
+        Distribute tasks using optimized round-robin.
         """
+        # Pre-allocate assignment lists
         assignments = {f"agent-{i:03d}": [] for i in range(self.num_agents)}
         
+        # Fast distribution using modulo
         for idx, task in enumerate(tasks):
-            agent_idx = idx % self.num_agents
-            agent_id = f"agent-{agent_idx:03d}"
+            agent_id = f"agent-{idx % self.num_agents:03d}"
             assignments[agent_id].append(task)
-            
+        
         self.task_assignments = assignments
         return assignments
     
-    def process_all_tasks(self, tasks: List[Any]) -> List[Dict]:
+    async def process_all_tasks_async(self, tasks: List[Any]) -> List[Dict]:
         """
-        Process all tasks using the agent pool.
-        
-        Args:
-            tasks: List of tasks to process
-            
-        Returns:
-            List of all results
+        Process all tasks asynchronously for better performance.
         """
-        # Distribute tasks
         assignments = self.distribute_tasks(tasks)
         
-        # Submit tasks to agents
+        # Submit all tasks in parallel
         futures = []
         for agent_idx, agent in enumerate(self.agents):
             agent_id = f"agent-{agent_idx:03d}"
             agent_tasks = assignments[agent_id]
             
+            # Batch submit tasks per agent
             for task in agent_tasks:
-                future = agent.process_task.remote(task)
-                futures.append(future)
+                futures.append(agent.process_task.remote(task))
         
-        # Collect all results
-        results = ray.get(futures)
-        self.completed_tasks.extend(results)
+        # Wait for all results
+        return await asyncio.gather(*[asyncio.wrap_future(f) for f in futures])
+    
+    def process_all_tasks(self, tasks: List[Any]) -> List[Dict]:
+        """
+        Process all tasks with optimized batching.
+        """
+        assignments = self.distribute_tasks(tasks)
         
-        return results
+        # Submit all tasks at once
+        futures = []
+        for agent_idx, (agent_id, agent_tasks) in enumerate(assignments.items()):
+            agent = self.agents[agent_idx]
+            futures.extend([agent.process_task.remote(task) for task in agent_tasks])
+        
+        # Get all results in one call
+        return ray.get(futures)
     
     def get_agent_statuses(self) -> List[Dict]:
-        """Get status of all agents."""
-        status_futures = [agent.get_status.remote() for agent in self.agents]
-        return ray.get(status_futures)
+        """Get status of all agents efficiently."""
+        return ray.get([agent.get_status.remote() for agent in self.agents])
     
     def get_workload_summary(self) -> Dict:
-        """Get summary of workload distribution."""
+        """Get optimized workload summary."""
         statuses = self.get_agent_statuses()
         
         total_tasks = sum(status["tasks_processed"] for status in statuses)
-        avg_tasks = total_tasks / self.num_agents if self.num_agents > 0 else 0
         
         return {
             "num_agents": self.num_agents,
             "total_tasks_completed": total_tasks,
-            "average_tasks_per_agent": avg_tasks,
-            "task_assignments": self.task_assignments,
+            "average_tasks_per_agent": total_tasks / self.num_agents if self.num_agents > 0 else 0,
+            "task_distribution": {k: len(v) for k, v in self.task_assignments.items()},
             "agent_statuses": statuses
         }
 

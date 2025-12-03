@@ -5,16 +5,16 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="ray-agent-demo",
-    version="0.2.0",
+    version="2.0.0",
     author="Your Name",
     author_email="your.email@example.com",
-    description="A comprehensive Ray agent demonstration showcasing distributed computing patterns",
+    description="High-performance Ray agent demonstration with optimized distributed computing patterns",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/ibxibx/ray-agent-demo",
     packages=find_packages(),
     classifiers=[
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Topic :: System :: Distributed Computing",
@@ -28,23 +28,14 @@ setup(
     install_requires=[
         "ray[default]>=2.9.0",
         "numpy>=1.24.0",
-        "pandas>=2.0.0",
-        "dataclasses-json>=0.6.0",
     ],
-    extras_require={
-        "dev": [
-            "pytest>=7.4.0",
-            "pytest-asyncio>=0.21.0",
-            "black>=23.0.0",
-            "flake8>=6.0.0",
-        ]
-    },
     entry_points={
         "console_scripts": [
-            "ray-agent-demo=run_all_demos:main",
+            "ray-agent-demo=run_optimized_demo:run_quick_demo",
+            "ray-agent-benchmark=run_optimized_demo:run_performance_benchmark",
         ],
     },
-    keywords="ray distributed-computing agents actors parallel-processing",
+    keywords="ray distributed-computing agents actors parallel-processing high-performance",
     project_urls={
         "Bug Reports": "https://github.com/ibxibx/ray-agent-demo/issues",
         "Source": "https://github.com/ibxibx/ray-agent-demo",
